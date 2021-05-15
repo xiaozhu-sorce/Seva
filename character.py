@@ -1,39 +1,26 @@
 from setting import Settings
 import pygame
 from pygame.sprite import Sprite
-<<<<<<< HEAD
-
-
-class Character(Sprite):
-    def __init__(self, ai_game):
-        super().__init__()
-        self.screen = ai_game.screen
-        # 访问屏幕属性
-=======
 from time import sleep
+
 
 class Character(Sprite):
     g = 9.8
-    def __init__(self,ai_game):
+
+    def __init__(self, ai_game):
         super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
-        #访问屏幕属性
->>>>>>> b3db184eb3c861bce7bdd223ba9818cb8310564d
+        # 访问屏幕属性
         self.screen_rect = ai_game.screen.get_rect()
 
         # 加载图像并获取矩形
         self.image = pygame.image.load('images/ship.bmp')
         self.rect = self.image.get_rect()
 
-<<<<<<< HEAD
         # 图像初始位置
-        self.rect.bottomleft = self.screen_rect.bottomleft
-=======
-        #图像初始位置
         self.rect.bottom = self.screen_rect.bottom - 100
         self.rect.left = self.screen_rect.left
->>>>>>> b3db184eb3c861bce7bdd223ba9818cb8310564d
 
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
@@ -53,23 +40,23 @@ class Character(Sprite):
 
     def jump_up_character(self):
         if self.jump:
-            #玩家跳起
+            # 玩家跳起
             if self.settings.character_jump_up >= 0:
                 self.y -= self.settings.character_jump_up
                 self.settings.character_jump_up -= 1
-            #玩家落地
+            # 玩家落地
             elif self.rect.y >= self.screen_rect.bottom - 100:
                 self.settings.character_jump_up = 15
                 self.settings.character_jump_down = 0
                 self.jump = False
-            #玩家下落
+            # 玩家下落
             else:
                 self.settings.character_jump_down += 1
                 self.y += self.settings.character_jump_down
         self.rect.y = self.y
         sleep(0.025)
         print(self.rect.x)
-            
 
     def blitme(self):
         self.screen.blit(self.image, self.rect)
+

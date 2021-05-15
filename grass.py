@@ -1,6 +1,5 @@
 import pygame
 
-
 class Grass:
     def __init__(self, screen, x, y):
         self.screen = screen

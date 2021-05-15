@@ -2,7 +2,6 @@ import pygame
 import pygame.font
 from grass import Grass
 
-
 class GrassSore:
     def __init__(self, screen):
         self.screen = screen
