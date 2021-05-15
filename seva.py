@@ -35,6 +35,8 @@ class Seva:
         self.rains_drop = True
         self.pulleted_up = False
         self.rain_height = 0
+        self.option_type = 0
+        self.screen_type = 0
 
         self.x_distance = 0
 
@@ -58,9 +60,13 @@ class Seva:
         while True:
             self._check_plat()
             self._check_events()
-            self._update_screen()
             self._character_run()
+            self._check_character_rain()
             self._check_character_water()
+            if self.screen_type == 0:
+                self._update_screen_main()
+            elif self.screen_type == 1:
+                self._update_screen_1()
 
     #更改角色跑步图片
     def _character_run(self):
@@ -76,7 +82,6 @@ class Seva:
         elif self.character.character_type == 6 and self.character.jump == False:
             self.character.character_type = 5
             self.character.update_character()
-
 
     def _check_events(self):
         for event in pygame.event.get():
@@ -95,6 +100,7 @@ class Seva:
             self.character.moving_right = False
             self.character.character_type = 1
             self.character.update_character()
+
         if event.key == pygame.K_LEFT:
             self.character.moving_left = False
             self.character.character_type = 4
@@ -106,14 +112,37 @@ class Seva:
             self.character.moving_right = True
             self.character.character_type = 2
             self.character.update_character()
+            self.option_type = 2
 
         elif event.key == pygame.K_LEFT:
             self.character.moving_left = True
             self.character.character_type = 5
             self.character.update_character()
+            self.option_type = 1
+
+        if event.key == pygame.K_RETURN:
+            if self.option_type == 1:
+                sys.exit()
+            elif self.option_type == 2:
+                self.screen_type += 1
+
         # 空格跳跃
         if event.key == pygame.K_SPACE:
             self.character.jump = True
+        
+        if event.key == pygame.K_ESCAPE:
+            sys.exit()
+
+    def _update_screen_main(self):
+        self.image_bg1 = pygame.image.load('images/bg1.png')
+        self.rect_bg1 = self.image_bg1.get_rect()
+        self.rect_bg1.midbottom = self.screen_rect.midbottom
+        self.screen.blit(self.image_bg1, self.rect_bg1)
+        self._update_quit_and_next()
+        self.grass_score.heart_score = 3
+
+        pygame.display.flip()
+
 
     def _check_plat(self): 
         
@@ -131,7 +160,7 @@ class Seva:
             self.character.down = True
 
 
-    def _update_screen(self):
+    def _update_screen_1(self):
         self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
 
         self.character.blitme()
@@ -155,6 +184,11 @@ class Seva:
         # 遍历grasses刷新
         fc.update_grasses(self.grasses)
         self.grass_score.show_score()
+
+        self.image_ground = pygame.image.load('images/ground.png')
+        self.rect_ground = self.image_ground.get_rect()
+        self.rect_ground.midbottom = self.screen_rect.midbottom
+        self.screen.blit(self.image_ground, self.rect_ground)
 
         self._update_pulleted()
 
@@ -222,6 +256,37 @@ class Seva:
     def _check_character_water(self):
         if self.character.rect.top > self.pulleted.rect.top + 200:
             sys.exit()      #这个方法要做更改
+
+    def _update_quit_and_next(self):
+        if self.option_type == 0:
+            self.image_quit = pygame.image.load('images/title2(un).png')
+            self.image_next = pygame.image.load('images/title1(un).png')
+        elif self.option_type == 1:
+            self.image_quit = pygame.image.load('images/title2.png')
+            self.image_next = pygame.image.load('images/title1(un).png')
+        elif self.option_type == 2:
+            self.image_quit = pygame.image.load('images/title2(un).png')
+            self.image_next = pygame.image.load('images/title1.png')
+
+        self.rect_quit = self.image_quit.get_rect()
+        self.rect_next = self.image_next.get_rect()
+        
+        self.rect_quit.bottomleft = self.screen_rect.midbottom
+        self.rect_next.bottomright = self.screen_rect.bottomright
+        
+        self.screen.blit(self.image_quit, self.rect_quit)
+        self.screen.blit(self.image_next, self.rect_next)
+    
+    def _check_character_rain(self):
+        collision = pygame.sprite.spritecollide(self.character,self.rains,True)
+        if collision:
+            if self.grass_score.heart_score == 0:
+                self.__init__()
+            else:
+                self.grass_score.heart_score -= 1
+                self.grass_score.prep_score()
+            
+
 
 if __name__ == '__main__':
     seva = Seva()

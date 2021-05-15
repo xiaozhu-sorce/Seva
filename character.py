@@ -13,17 +13,7 @@ class Character(Sprite):
         # 访问屏幕属性
         self.screen_rect = ai_game.screen.get_rect()
 
-        self.character_type = 1
-
-        self.update_character()
-        self.rect = self.image.get_rect()
-
-        # 图像初始位置
-        self.rect.bottom = self.screen_rect.bottom - 100
-        self.rect.left = self.screen_rect.left
-
-        self.x = float(self.rect.x)
-        self.y = float(self.rect.y)
+        self.reset()
 
         self.moving_right = False
         self.moving_left = False
@@ -50,7 +40,7 @@ class Character(Sprite):
                 self.down = True
         elif self.down:
             # 玩家落地
-            if self.rect.y >= self.screen_rect.bottom - 200:
+            if self.rect.y >= self.screen_rect.bottom - 163:
                 self.settings.character_jump_up = 20
                 self.settings.character_jump_down = 0
                 self.jump = False
@@ -60,7 +50,7 @@ class Character(Sprite):
                 self.y += self.settings.character_jump_down
 
         self.rect.y = self.y
-        sleep(0.025)
+        sleep(0.002)
 
     def blitme(self):
         self.screen.blit(self.image, self.rect)
@@ -79,4 +69,14 @@ class Character(Sprite):
             self.image = pygame.image.load('images/person5.png') 
         elif(self.character_type == 6):
             self.image = pygame.image.load('images/person6.png') 
+        
+    def reset(self):
+        self.character_type = 1
+        self.update_character()
+        self.rect = self.image.get_rect()
+        # 图像初始位置
+        self.rect.y = self.screen_rect.bottom - 163
+        self.rect.x = self.screen_rect.left
+        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
 
