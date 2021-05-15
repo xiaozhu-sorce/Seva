@@ -36,6 +36,8 @@ class Seva:
         self.pulleted_up = False
         self.rain_height = 0
 
+        self.x_distance = 0
+
         self.boards = [Board(self.screen, 100, 40, 800, 500),
                        Board(self.screen, 100, 40, 800, 500),
                        Board(self.screen, 40, 40, 1000, 400),
@@ -57,6 +59,24 @@ class Seva:
             self._check_plat()
             self._check_events()
             self._update_screen()
+            self._character_run()
+            self._check_character_water()
+
+    #更改角色跑步图片
+    def _character_run(self):
+        if self.character.character_type == 2 and self.character.jump == False:
+            self.character.character_type = 3
+            self.character.update_character()
+        elif self.character.character_type == 3 and self.character.jump == False:
+            self.character.character_type = 2
+            self.character.update_character()
+        if self.character.character_type == 5 and self.character.jump == False:
+            self.character.character_type = 6
+            self.character.update_character()
+        elif self.character.character_type == 6 and self.character.jump == False:
+            self.character.character_type = 5
+            self.character.update_character()
+
 
     def _check_events(self):
         for event in pygame.event.get():
@@ -70,17 +90,27 @@ class Seva:
                 self._check_keyup_events(event)
 
     def _check_keyup_events(self, event):
+        #暂停跑动
         if event.key == pygame.K_RIGHT:
             self.character.moving_right = False
+            self.character.character_type = 1
+            self.character.update_character()
         if event.key == pygame.K_LEFT:
             self.character.moving_left = False
+            self.character.character_type = 4
+            self.character.update_character()
 
     def _check_keydown_events(self, event):
-        # 左右移动
+        # 左右跑动
         if event.key == pygame.K_RIGHT:
             self.character.moving_right = True
+            self.character.character_type = 2
+            self.character.update_character()
+
         elif event.key == pygame.K_LEFT:
             self.character.moving_left = True
+            self.character.character_type = 5
+            self.character.update_character()
         # 空格跳跃
         if event.key == pygame.K_SPACE:
             self.character.jump = True
@@ -95,7 +125,7 @@ class Seva:
                 if self.character.rect.top > c.rect.y:
                     self.character.jump = False
                     self.character.down = True
-                elif self.character.rect.bottom > c.rect.y and self.character.jump == False:
+                elif self.character.rect.bottom > c.rect.top and self.character.jump == False:
                     self.settings.character_jump_up = 20
         else:
             self.character.down = True
@@ -188,6 +218,10 @@ class Seva:
                 self.grass_score.heart_score += 1
             else:
                 self.grass_score.grass_score += 1
+
+    def _check_character_water(self):
+        if self.character.rect.top > self.pulleted.rect.top + 200:
+            sys.exit()      #这个方法要做更改
 
 if __name__ == '__main__':
     seva = Seva()
