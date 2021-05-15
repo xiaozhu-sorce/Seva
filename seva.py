@@ -20,56 +20,54 @@ class Seva:
         # 初始化
         pygame.init()
         self.settings = Settings()
-
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
-
         self.screen.fill(self.settings.bg_color)
         self.screen_rect = self.screen.get_rect()
         self.screen_height = self.screen.get_height()
         self.screen_width = self.screen.get_width()
+        
+        #进入与退出选择标志
+        self.option_type = 0
+        #主界面选择标志
+        self.screen_type = 0
 
         self.rains = pygame.sprite.Group()
         self.character = Character(self)
         self.pulleted = Pulluted(self)
-
-        self.rains_drop = True
-        self.pulleted_up = False
-        self.rain_height = 0
-        self.option_type = 0
-        self.screen_type = 0
-
-        self.x_distance = 0
-
+        self.grasses = pygame.sprite.Group()
+        self.grass_score = GrassScore(self.screen)
+        self.grasses.add(Grass(self.screen, 800, 460))
         self.boards = [Board(self.screen, 100, 40, 800, 500),
                        Board(self.screen, 100, 40, 800, 500),
                        Board(self.screen, 40, 40, 1000, 400),
                        Board(self.screen, 200, 20, 600, 300),
                        Board(self.screen, 200, 40, 400, 280),
                        Board(self.screen, 100, 40, 100, 150)]
+                       
 
-        self.grasses = pygame.sprite.Group()
-        self.grasses.add(Grass(self.screen, 800, 460))
-
-        # 分数
-        self.grass_score = GrassScore(self.screen)
+        self.rains_drop = True
+        self.pulleted_up = False
+        
+        self.rain_height = 0
+        self.x_distance = 0
 
         pygame.display.set_caption("Seva")
 
     def run_game(self):
         self.create_rain()
         while True:
-            self._check_plat()
             self._check_events()
             self._character_run()
             self._check_character_rain()
             self._check_character_water()
+            self._check_plat()
             if self.screen_type == 0:
-                self._update_screen_main()
+                self._update_screen_main_1()
             elif self.screen_type == 1:
                 self._update_screen_1()
 
-    #更改角色跑步图片
     def _character_run(self):
+        """更改角色跑步图片"""
         if self.character.character_type == 2 and self.character.jump == False:
             self.character.character_type = 3
             self.character.update_character()
@@ -133,7 +131,7 @@ class Seva:
         if event.key == pygame.K_ESCAPE:
             sys.exit()
 
-    def _update_screen_main(self):
+    def _update_screen_main_1(self):
         self.image_bg1 = pygame.image.load('images/bg1.png')
         self.rect_bg1 = self.image_bg1.get_rect()
         self.rect_bg1.midbottom = self.screen_rect.midbottom
@@ -143,6 +141,35 @@ class Seva:
 
         pygame.display.flip()
 
+    def _update_screen_main_2(self):
+        self.image_bg2 = pygame.image.load('images/bg2.png')
+        self.rect_bg2 = self.image_bg1.get_rect()
+        self.rect_bg2.midbottom = self.screen_rect.midbottom
+        self.screen.blit(self.image_bg2, self.rect_bg2)
+        self._update_quit_and_next()
+        self.grass_score.heart_score = 3
+
+        pygame.display.flip()
+    
+    def _update_screen_main_3(self):
+        self.image_bg3 = pygame.image.load('images/bg3.png')
+        self.rect_bg3 = self.image_bg3.get_rect()
+        self.rect_bg3.midbottom = self.screen_rect.midbottom
+        self.screen.blit(self.image_bg3, self.rect_bg3)
+        self._update_quit_and_next()
+        self.grass_score.heart_score = 3
+
+        pygame.display.flip()
+
+    def _update_screen_main_4(self):
+        self.image_bg4 = pygame.image.load('images/bg4.png')
+        self.rect_bg4 = self.image_bg4.get_rect()
+        self.rect_bg4.midbottom = self.screen_rect.midbottom
+        self.screen.blit(self.image_bg4, self.rect_bg4)
+        self._update_quit_and_next()
+        self.grass_score.heart_score = 3
+
+        pygame.display.flip()
 
     def _check_plat(self): 
         
@@ -163,13 +190,38 @@ class Seva:
     def _update_screen_1(self):
         self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
 
-        self.character.blitme()
-        self.character.move_character()
-        self.character.jump_up_character()
-
         self.rains.draw(self.screen)
         self.rain_drop()
         self.check_rain_oracle()
+
+        self._create_character()
+        self._update_pulleted()
+        self._ground()
+        self._create_brick_1()
+
+        pygame.display.flip()
+
+    def _update_pulleted(self):
+        """管理废水的类"""
+        self.screen.blit(self.pulleted.image, self.pulleted.rect)
+        if self.pulleted_up:
+            if (self.pulleted.rect.y >= self.screen_rect.top+50):
+                self.pulleted.rect.y -= self.settings.pulluted_speed    
+
+    def create_rain(self):
+        """判断行列有多少元素,设置间距,生产雨添加到Group组"""
+        new_rain = Rain(self)
+        self.rain_height = new_rain.rect_height
+        m = 0
+        for x in range(5):
+            m += 200
+            new_rain = Rain(self)
+            random_number = randint(-100, 100)
+            new_rain.rect.x = m + random_number
+            self.rains.add(new_rain)
+
+    def _create_brick_1(self):
+        """更新花花和分数,创建某个页面的平台"""
 
         # 更新
         self.boards[2].explosion()
@@ -185,35 +237,21 @@ class Seva:
         fc.update_grasses(self.grasses)
         self.grass_score.show_score()
 
+
+
+    def _create_character(self):
+        """生成人物"""
+        self.character.blitme()
+        self.character.move_character()
+        self.character.jump_up_character()
+        
+
+    def _ground(self):
+        """地面"""
         self.image_ground = pygame.image.load('images/ground.png')
         self.rect_ground = self.image_ground.get_rect()
         self.rect_ground.midbottom = self.screen_rect.midbottom
         self.screen.blit(self.image_ground, self.rect_ground)
-
-        self._update_pulleted()
-
-        pygame.display.flip()
-
-    def _update_pulleted(self):
-        """管理废水的类"""
-        self.screen.blit(self.pulleted.image, self.pulleted.rect)
-        if self.pulleted_up:
-            if (self.pulleted.rect.y >= self.screen_rect.top+50):
-                self.pulleted.rect.y -= self.settings.pulluted_speed
-
-    def create_rain(self):
-        """
-        判断行列有多少元素,设置间距,生产雨添加到Group组
-        """
-        new_rain = Rain(self)
-        self.rain_height = new_rain.rect_height
-        m = 0
-        for x in range(5):
-            m += 200
-            new_rain = Rain(self)
-            random_number = randint(-100, 100)
-            new_rain.rect.x = m + random_number
-            self.rains.add(new_rain)
 
     def rain_drop(self):
         # 更新雨下落的Y轴位置
@@ -286,8 +324,6 @@ class Seva:
                 self.grass_score.heart_score -= 1
                 self.grass_score.prep_score()
             
-
-
 if __name__ == '__main__':
     seva = Seva()
     seva.run_game()
