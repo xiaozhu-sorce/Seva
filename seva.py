@@ -13,6 +13,7 @@ from score import GrassScore
 from pulluted import Pulluted
 from score import GrassScore
 from pygame.sprite import Group
+from success import Door
 
 class Seva:
 
@@ -30,7 +31,12 @@ class Seva:
         self.option_type = 0
         #主界面选择标志
         self.screen_type = 0
-
+        
+        #主题选择标志
+        self.theme_type = 0
+        #self.text_read()
+        
+        self.door = Door(self)
         self.rains = pygame.sprite.Group()
         self.character = Character(self)
         self.pulleted = Pulluted(self)
@@ -56,6 +62,7 @@ class Seva:
     def run_game(self):
         self.create_rain()
         while True:
+            self._check_success()
             self._check_events()
             self._character_run()
             self._check_character_rain()
@@ -85,6 +92,7 @@ class Seva:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+                #self.text_save()
 
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
@@ -121,6 +129,7 @@ class Seva:
         if event.key == pygame.K_RETURN:
             if self.option_type == 1:
                 sys.exit()
+                #self.text_save()
             elif self.option_type == 2:
                 self.screen_type += 1
 
@@ -193,6 +202,7 @@ class Seva:
         self.rains.draw(self.screen)
         self.rain_drop()
         self.check_rain_oracle()
+        self.door.show_door()
 
         self._create_character()
         self._update_pulleted()
@@ -323,6 +333,26 @@ class Seva:
             else:
                 self.grass_score.heart_score -= 1
                 self.grass_score.prep_score()
+    
+    #通关判断
+    def _check_success(self):
+        collision = pygame.sprite.collide_rect(self.character, self.door)
+        if collision:
+            self.__init__()
+            self.theme_type += 1
+
+
+    '''
+    def text_save(self):
+        file = open('theme.txt','w')
+        file.write(str(self.theme_type))
+        file.close()
+    
+    def text_read(self):
+        file = open('theme.txt','r')
+        self.theme_type = int(file.read())
+        file.close()
+    '''
             
 if __name__ == '__main__':
     seva = Seva()
