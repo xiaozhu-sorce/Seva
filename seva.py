@@ -35,6 +35,8 @@ class Seva:
         self.rains_drop = True
         self.pulleted_up = False
         self.rain_height = 0
+        self.option_type = 0
+        self.screen_type = 0
 
         self.boards = [Board(self.screen, 100, 40, 800, 500),
                        Board(self.screen, 100, 40, 800, 500),
@@ -42,6 +44,7 @@ class Seva:
                        Board(self.screen, 200, 20, 600, 300),
                        Board(self.screen, 200, 40, 400, 280),
                        Board(self.screen, 100, 40, 100, 150)]
+
         self.grasses = pygame.sprite.Group()
         self.grasses.add(Grass(self.screen, 800, 460))
 
@@ -54,14 +57,14 @@ class Seva:
         self.create_rain()
         while True:
             self._check_events()
-            self._update_screen()
+            if self.screen_type == 0:
+                self._update_screen_main()
+            elif self.screen_type == 1:
+                self._update_screen_1()
 
     def _check_events(self):
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
-
-            elif event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
 
             elif event.type == pygame.KEYUP:
@@ -70,6 +73,7 @@ class Seva:
     def _check_keyup_events(self, event):
         if event.key == pygame.K_RIGHT:
             self.character.moving_right = False
+
         if event.key == pygame.K_LEFT:
             self.character.moving_left = False
 
@@ -77,13 +81,32 @@ class Seva:
         # 左右移动
         if event.key == pygame.K_RIGHT:
             self.character.moving_right = True
+            self.option_type = 2
+
         elif event.key == pygame.K_LEFT:
             self.character.moving_left = True
+            self.option_type = 1
+
+        if event.key == pygame.K_RETURN:
+            if self.option_type == 1:
+                sys.exit()
+            elif self.option_type == 2:
+                self.screen_type = 1
+
         # 空格跳跃
         if event.key == pygame.K_SPACE:
             self.character.jump = True
 
-    def _update_screen(self):
+    def _update_screen_main(self):
+        self.image_bg1 = pygame.image.load('images/bg1.png')
+        self.rect_bg1 = self.image_bg1.get_rect()
+        self.rect_bg1.midbottom = self.screen_rect.midbottom
+        self.screen.blit(self.image_bg1, self.rect_bg1)
+        self._update_quit_and_next()
+
+        pygame.display.flip()
+
+    def _update_screen_1(self):
         self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
 
         self.character.blitme()
@@ -170,6 +193,25 @@ class Seva:
             else:
                 self.grass_score.grass_score += 1
 
+    def _update_quit_and_next(self):
+        if self.option_type == 0:
+            self.image_quit = pygame.image.load('images/title2(un).png')
+            self.image_next = pygame.image.load('images/title1(un).png')
+        elif self.option_type == 1:
+            self.image_quit = pygame.image.load('images/title2.png')
+            self.image_next = pygame.image.load('images/title1(un).png')
+        elif self.option_type == 2:
+            self.image_quit = pygame.image.load('images/title2(un).png')
+            self.image_next = pygame.image.load('images/title1.png')
+
+        self.rect_quit = self.image_quit.get_rect()
+        self.rect_next = self.image_next.get_rect()
+        
+        self.rect_quit.bottomleft = self.screen_rect.midbottom
+        self.rect_next.bottomright = self.screen_rect.bottomright
+        
+        self.screen.blit(self.image_quit, self.rect_quit)
+        self.screen.blit(self.image_next, self.rect_next)
 
 if __name__ == '__main__':
     seva = Seva()
