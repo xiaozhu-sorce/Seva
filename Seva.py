@@ -3,9 +3,9 @@ import pygame
 from boards import Board
 from grass import Grass
 from grassScore import GrassSore
-
-from Setting import Settings
-
+from setting import Settings
+from character import Character
+from time import sleep
 
 class Seva:
     def __init__(self):
@@ -32,6 +32,40 @@ class Seva:
                 if event.type == pygame.QUIT:
                     sys.exit()
 
+            self._check_events()
+            self._update_screen()
+    
+    def _check_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            
+            elif event.type == pygame.KEYDOWN:
+                self._check_keydown_events(event)
+
+            elif event.type == pygame.KEYUP:
+                self._check_keyup_events(event)
+
+    def _check_keyup_events(self,event):
+        if event.key == pygame.K_RIGHT:
+            self.character.moving_right = False
+        if event.key == pygame.K_LEFT:
+            self.character.moving_left = False
+
+    def _check_keydown_events(self,event):
+        #左右移动
+        if event.key == pygame.K_RIGHT:
+            self.character.moving_right = True
+        elif event.key == pygame.K_LEFT:
+            self.character.moving_left = True
+        #空格跳跃
+        if event.key == pygame.K_SPACE:
+            self.character.jump = True
+
+        
+    def _update_screen(self):
+        self.screen.fill(self.bg_color)
+
             # 更新
             self.boards[2].explosion()
             # 覆盖
@@ -43,8 +77,14 @@ class Seva:
                 grass.update_grass()
                 self.grass_score.show_score()
 
+<<<<<<< HEAD
             pygame.display.flip()
+=======
+        self.character.move_character()
+        self.character.jump_up_character()
+>>>>>>> b3db184eb3c861bce7bdd223ba9818cb8310564d
 
+        pygame.display.flip()
 
 if __name__ == '__main__':
     seva = Seva()
