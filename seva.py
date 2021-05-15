@@ -34,7 +34,7 @@ class Seva:
         
         #主题选择标志
         self.theme_type = 0
-        #self.text_read()
+        self.text_read()
         
         self.door = Door(self)
         self.rains = pygame.sprite.Group()
@@ -92,7 +92,7 @@ class Seva:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-                #self.text_save()
+                self.text_save()
 
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
@@ -129,7 +129,7 @@ class Seva:
         if event.key == pygame.K_RETURN:
             if self.option_type == 1:
                 sys.exit()
-                #self.text_save()
+                self.text_save()
             elif self.option_type == 2:
                 self.screen_type += 1
 
@@ -303,7 +303,7 @@ class Seva:
 
     def _check_character_water(self):
         if self.character.rect.top > self.pulleted.rect.top + 200:
-            sys.exit()      #这个方法要做更改
+            self.__init__()
 
     def _update_quit_and_next(self):
         if self.option_type == 0:
@@ -340,9 +340,10 @@ class Seva:
         if collision:
             self.__init__()
             self.theme_type += 1
+            self.text_save()
 
 
-    '''
+    
     def text_save(self):
         file = open('theme.txt','w')
         file.write(str(self.theme_type))
@@ -352,7 +353,7 @@ class Seva:
         file = open('theme.txt','r')
         self.theme_type = int(file.read())
         file.close()
-    '''
+    
             
 if __name__ == '__main__':
     seva = Seva()
