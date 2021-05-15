@@ -1,5 +1,7 @@
 import sys
+from typing import ForwardRef
 import pygame
+import functions as fc
 from rain import Rain
 from random import randint
 from setting import Settings
@@ -7,8 +9,10 @@ from character import Character
 from time import sleep
 from boards import Board
 from grass import Grass
-from grassScore import GrassSore
-
+from score import GrassScore
+from pulluted import Pulluted
+from score import GrassScore
+from pygame.sprite import Group
 
 class Seva:
 
@@ -20,13 +24,16 @@ class Seva:
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
 
         self.screen.fill(self.settings.bg_color)
+        self.screen_rect = self.screen.get_rect()
         self.screen_height = self.screen.get_height()
         self.screen_width = self.screen.get_width()
 
         self.rains = pygame.sprite.Group()
         self.character = Character(self)
+        self.pulleted = Pulluted(self)
 
         self.rains_drop = True
+        self.pulleted_up = False
         self.rain_height = 0
 
         self.boards = [Board(self.screen, 100, 40, 800, 500),
@@ -35,10 +42,12 @@ class Seva:
                        Board(self.screen, 200, 20, 600, 300),
                        Board(self.screen, 200, 40, 400, 280),
                        Board(self.screen, 100, 40, 100, 150)]
-        self.grasses = [Grass(self.screen, 800, 440)]
+
+        self.grasses = pygame.sprite.Group()
+        self.grasses.add(Grass(self.screen, 800, 460))
 
         # 分数
-        self.grass_score = GrassSore(self.screen)
+        self.grass_score = GrassScore(self.screen)
 
         pygame.display.set_caption("Seva")
 
@@ -96,13 +105,12 @@ class Seva:
         self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
 
         self.character.blitme()
-
         self.character.move_character()
         self.character.jump_up_character()
 
-        self.rains.draw(self.screen)  # 将雨的组集体绘制
-        self.rain_drop()  # 更新下落
-        self.check_rain_oracle()  # 检查是否到达边界
+        self.rains.draw(self.screen)
+        self.rain_drop()
+        self.check_rain_oracle()
 
         # 更新
         self.boards[2].explosion()
@@ -110,16 +118,28 @@ class Seva:
         for board in self.boards:
             board.blitme()
         for grass in self.grasses:
-            grass.update_grass()
-           # self.grass_score.show_score()
+            # 是否得到
+            self.check_grass_gain(grass)
+            # 更新小草数目
+            self.grass_score.prep_score()
+        # 遍历grasses刷新
+        fc.update_grasses(self.grasses)
+        self.grass_score.show_score()
+
+        self._update_pulleted()
 
         pygame.display.flip()
 
+    def _update_pulleted(self):
+        """管理废水的类"""
+        self.screen.blit(self.pulleted.image, self.pulleted.rect)
+        if self.pulleted_up:
+            if (self.pulleted.rect.y >= self.screen_rect.top+50):
+                self.pulleted.rect.y -= self.settings.pulluted_speed
+
     def create_rain(self):
         """
-        判断行列有多少元素
-        设置间距
-        生产雨添加到Group组
+        判断行列有多少元素,设置间距,生产雨添加到Group组
         """
         new_rain = Rain(self)
         self.rain_height = new_rain.rect_height
@@ -134,8 +154,10 @@ class Seva:
     def rain_drop(self):
         # 更新雨下落的Y轴位置
         for read_rain in self.rains.sprites():
-            read_rain.rect.y += 3
-            if read_rain.rect.y >= 500:
+
+            read_rain.rect.y += 1.0
+            if read_rain.rect.y >= 150:
+
                 self.rains_drop = True
             else:
                 self.rains_drop = False
@@ -145,8 +167,27 @@ class Seva:
         for read_rain in self.rains.copy():
             if read_rain.rect.bottom >= self.screen_height:
                 self.rains.remove(read_rain)
+                self.pulleted_up = True
+                
         if self.rains_drop:
             self.create_rain()
+
+    def check_grass_changeable(self):
+        if self.grass_score.grass_score >= 3:
+            self.grass_score.change_grass()
+
+        self.grass_score.update_grass()
+
+    def check_grass_gain(self, grass):
+        # 碰撞
+        collisions = pygame.sprite.spritecollide(self.character, self.grasses, True)
+        if collisions:
+            # 大于3减少3棵草（兑换心）
+            if self.grass_score.grass_score >= 3:
+                self.grass_score.grass_score -= 3
+                self.grass_score.heart_score += 1
+            else:
+                self.grass_score.grass_score += 1
 
 if __name__ == '__main__':
     seva = Seva()
