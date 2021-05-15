@@ -1,9 +1,9 @@
-import random
 import sys
 import pygame
 from rain import Rain
 from random import randint
 from setting import Settings
+from character import Character
 from time import sleep
  
 class Seva:
@@ -20,6 +20,7 @@ class Seva:
         self.screen_width = self.screen.get_width()
         
         self.rains= pygame.sprite.Group()
+        self.character = Character(self)
 
         self.rains_drop = True
         self.rain_height = 0
@@ -29,16 +30,50 @@ class Seva:
     def run_game(self):
         self.create_rain()
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
- 
-            self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
-            self.rains.draw(self.screen)#将雨的组集体绘制
-            self.rain_drop()#更新下落
-            self.check_rain_oracle()#检查是否到达边界
-            pygame.display.flip()#绘制屏幕
+            self._check_events()
+            self._update_screen()
 
+    def _check_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            
+            elif event.type == pygame.KEYDOWN:
+                self._check_keydown_events(event)
+
+            elif event.type == pygame.KEYUP:
+                self._check_keyup_events(event)
+
+    def _check_keyup_events(self,event):
+        if event.key == pygame.K_RIGHT:
+            self.character.moving_right = False
+        if event.key == pygame.K_LEFT:
+            self.character.moving_left = False
+
+    def _check_keydown_events(self,event):
+        #左右移动
+        if event.key == pygame.K_RIGHT:
+            self.character.moving_right = True
+        elif event.key == pygame.K_LEFT:
+            self.character.moving_left = True
+        #空格跳跃
+        if event.key == pygame.K_SPACE:
+            self.character.jump = True
+
+        
+    def _update_screen(self):
+        self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
+        
+        self.character.blitme()
+
+        self.character.move_character()
+        self.character.jump_up_character()
+
+        self.rains.draw(self.screen)#将雨的组集体绘制
+        self.rain_drop()#更新下落
+        self.check_rain_oracle()#检查是否到达边界
+
+        pygame.display.flip()
 
     def create_rain(self):
         """
