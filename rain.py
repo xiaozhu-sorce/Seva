@@ -1,6 +1,7 @@
 import pygame
 from pygame.sprite import Sprite
- 
+
+
 class Rain(Sprite):
     def __init__(self, ai_game):
         super().__init__()
@@ -14,4 +15,5 @@ class Rain(Sprite):
 
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
-        aa
+
+
