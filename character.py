@@ -15,7 +15,7 @@ class Character(Sprite):
         self.screen_rect = ai_game.screen.get_rect()
 
         # 加载图像并获取矩形
-        self.image = pygame.image.load('images/ship.bmp')
+        self.image = pygame.image.load('images/person1.png')
         self.rect = self.image.get_rect()
 
         # 图像初始位置
@@ -29,6 +29,7 @@ class Character(Sprite):
         self.moving_left = False
 
         self.jump = False
+        self.down = True
 
     def move_character(self):
         if self.moving_right and self.rect.right < self.screen_rect.right:
@@ -41,21 +42,24 @@ class Character(Sprite):
     def jump_up_character(self):
         if self.jump:
             # 玩家跳起
-            if self.settings.character_jump_up >= 0:
+            if self.settings.character_jump_up > 0:
                 self.y -= self.settings.character_jump_up
                 self.settings.character_jump_up -= 1
+            if self.settings.character_jump_up == 0:
+                self.jump = False
+        elif self.down:
             # 玩家落地
-            elif self.rect.y >= self.screen_rect.bottom - 100:
-                self.settings.character_jump_up = 15
+            if self.rect.y >= self.screen_rect.bottom - 200:
+                self.settings.character_jump_up = 20
                 self.settings.character_jump_down = 0
                 self.jump = False
-            # 玩家下落
+             # 玩家下落
             else:
                 self.settings.character_jump_down += 1
                 self.y += self.settings.character_jump_down
+
         self.rect.y = self.y
         sleep(0.025)
-        print(self.rect.x)
 
     def blitme(self):
         self.screen.blit(self.image, self.rect)
