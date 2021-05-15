@@ -14,3 +14,4 @@ class Rain(Sprite):
 
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
+        aa
