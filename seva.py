@@ -1,6 +1,7 @@
 import sys
 from typing import ForwardRef
 import pygame
+import functions as fc
 from rain import Rain
 from random import randint
 from setting import Settings
@@ -8,8 +9,10 @@ from character import Character
 from time import sleep
 from boards import Board
 from grass import Grass
-from grassScore import GrassSore
+from score import GrassScore
 from pulluted import Pulluted
+from score import GrassScore
+from pygame.sprite import Group
 
 class Seva:
 
@@ -39,10 +42,11 @@ class Seva:
                        Board(self.screen, 200, 20, 600, 300),
                        Board(self.screen, 200, 40, 400, 280),
                        Board(self.screen, 100, 40, 100, 150)]
-        self.grasses = [Grass(self.screen, 800, 460)]
+        self.grasses = pygame.sprite.Group()
+        self.grasses.add(Grass(self.screen, 800, 460))
 
         # 分数
-        self.grass_score = GrassSore(self.screen)
+        self.grass_score = GrassScore(self.screen)
 
         pygame.display.set_caption("Seva")
 
@@ -96,8 +100,13 @@ class Seva:
         for board in self.boards:
             board.blitme()
         for grass in self.grasses:
-            grass.update_grass()
-           # self.grass_score.show_score()
+            # 是否得到
+            self.check_grass_gain(grass)
+            # 更新小草数目
+            self.grass_score.prep_score()
+        # 遍历grasses刷新
+        fc.update_grasses(self.grasses)
+        self.grass_score.show_score()
 
         self._update_pulleted()
 
@@ -143,6 +152,24 @@ class Seva:
                 
         if self.rains_drop:
             self.create_rain()
+
+    def check_grass_changeable(self):
+        if self.grass_score.grass_score >= 3:
+            self.grass_score.change_grass()
+
+        self.grass_score.update_grass()
+
+    def check_grass_gain(self, grass):
+        # 碰撞
+        collisions = pygame.sprite.spritecollide(self.character, self.grasses, True)
+        if collisions:
+            # 大于3减少3棵草（兑换心）
+            if self.grass_score.grass_score >= 3:
+                self.grass_score.grass_score -= 3
+                self.grass_score.heart_score += 1
+            else:
+                self.grass_score.grass_score += 1
+
 
 if __name__ == '__main__':
     seva = Seva()

@@ -54,7 +54,6 @@ class Character(Sprite):
                 self.y += self.settings.character_jump_down
         self.rect.y = self.y
         sleep(0.025)
-        print(self.rect.x)
 
     def blitme(self):
         self.screen.blit(self.image, self.rect)
