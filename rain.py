@@ -1,4 +1,5 @@
 import pygame
+import random
 from pygame.sprite import Sprite
  
 class Rain(Sprite):
@@ -7,7 +8,7 @@ class Rain(Sprite):
         self.screen = ai_game.screen
         self.screen_rect = self.screen.get_rect()
 
-        self.image = pygame.image.load('images/rain.bmp')
+        self.image = pygame.image.load('images/rain3.png')
         self.rect = self.image.get_rect()
         self.rect_width = self.rect.width
         self.rect_height = self.rect.height

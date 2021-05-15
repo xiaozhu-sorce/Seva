@@ -1,8 +1,7 @@
-from setting import Settings
 import pygame
-from pygame.sprite import Sprite
 from time import sleep
-
+from pygame.sprite import Sprite
+from setting import Settings
 
 class Character(Sprite):
     g = 9.8

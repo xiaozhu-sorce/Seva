@@ -1,6 +1,3 @@
-import pygame
-
-
 class Settings:
     def __init__(self):
         """初始化游戏的设置"""
@@ -11,6 +8,9 @@ class Settings:
 
         # 雨滴速度
         self.rain_speed = 1.0
+
+        #废水速度
+        self.pulluted_speed = 1.0
 
         self.character_speed = 7  # 在80的跳跃高度下，水平移动大约为220
         self.character_jump_up = 12  # 跳跃高度大约为80
