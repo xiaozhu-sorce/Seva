@@ -1,5 +1,4 @@
 import pygame
-import random
 from pygame.sprite import Sprite
 
 
@@ -16,5 +15,3 @@ class Rain(Sprite):
 
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
-
-

@@ -79,4 +79,3 @@ class Character(Sprite):
         self.rect.x = self.screen_rect.left
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
-

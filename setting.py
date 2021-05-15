@@ -12,6 +12,7 @@ class Settings:
         #废水速度
         self.pulluted_speed = 1.0
 
+        #人物速度
         self.character_speed = 7  # 在80的跳跃高度下，水平移动大约为220
         self.character_jump_up = 20  # 跳跃高度大约为80
         self.character_jump_down = 0
