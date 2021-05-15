@@ -280,7 +280,7 @@ class Seva:
     def _check_character_rain(self):
         collision = pygame.sprite.spritecollide(self.character,self.rains,True)
         if collision:
-            if self.grass_score.heart_score == 0:
+            if self.grass_score.heart_score == 1:
                 self.__init__()
             else:
                 self.grass_score.heart_score -= 1
