@@ -56,6 +56,7 @@ class Seva:
     def run_game(self):
         self.create_rain()
         while True:
+            self._check_plat()
             self._check_events()
             if self.screen_type == 0:
                 self._update_screen_main()
@@ -106,6 +107,23 @@ class Seva:
 
         pygame.display.flip()
 
+
+    def _check_plat(self): 
+        
+        collision = pygame.sprite.spritecollide(self.character,self.boards,False)
+        if collision:
+            self.character.down = False
+            self.settings.character_jump_down = 0
+            for c in collision:
+                if self.character.rect.top > c.rect.y:
+                    self.character.jump = False
+                    self.character.down = True
+                elif self.character.rect.bottom > c.rect.y and self.character.jump == False:
+                    self.settings.character_jump_up = 20
+        else:
+            self.character.down = True
+
+
     def _update_screen_1(self):
         self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
 
@@ -149,22 +167,23 @@ class Seva:
         new_rain = Rain(self)
         self.rain_height = new_rain.rect_height
         m = 0
-        for x in range(11):
-            m += 100
+        for x in range(5):
+            m += 200
             new_rain = Rain(self)
-            random_number = randint(-20, 20)
+            random_number = randint(-100, 100)
             new_rain.rect.x = m + random_number
             self.rains.add(new_rain)
 
     def rain_drop(self):
         # 更新雨下落的Y轴位置
         for read_rain in self.rains.sprites():
+
             read_rain.rect.y += 1.0
             if read_rain.rect.y >= 150:
+
                 self.rains_drop = True
             else:
                 self.rains_drop = False
-            sleep(0.00001)
 
     def check_rain_oracle(self):
         # 检查是否到达边界，删除到达边界的元素
