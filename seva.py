@@ -60,6 +60,7 @@ class Seva:
                         Board(self.screen, 200, 40, 80, 200),
                         Board(self.screen, 150, 45, 650, 200),
                         Board(self.screen, 200, 50, 1000, 100)]
+
         self.boards2 = [Board(self.screen, 300, 20, 800, 600),
                         Board(self.screen, 100, 40, 500, 550),
                         Board(self.screen, 50, 20, 900, 250),
@@ -99,10 +100,17 @@ class Seva:
                 self._update_screen_main_4()
             elif self.screen_type == 1:
                 self._update_screen_1()
-                self.boards = self.boards1
+                self.bsoards = self.boards1
             elif self.screen_type == 2:
                 self._update_screen_2()
                 self.boards = self.boards2
+            elif self.screen_type == 3:
+                self._update_screen_1()
+                self.boards = self.boards1
+            elif self.screen_type == 4:
+                self._update_screen_2()
+                self.boards = self.boards2
+            
 
     def _character_run(self):
         """更改角色跑步图片"""
@@ -236,8 +244,8 @@ class Seva:
         self.door.show_door()
 
         self._create_character()
-        self._update_pulleted()
         self._ground()
+        self._update_pulleted()
         self._create_brick_1()
 
         pygame.display.flip()
@@ -251,8 +259,8 @@ class Seva:
         self.door.show_door()
 
         self._create_character()
-        self._update_pulleted()
         self._ground()
+        self._update_pulleted()
         self._create_brick_2()
 
         pygame.display.flip()
@@ -270,8 +278,8 @@ class Seva:
         new_rain = Rain(self)
         self.rain_height = new_rain.rect_height
         m = 0
-        for x in range(5):
-            m += 200
+        for x in range(4):
+            m += 250
             new_rain = Rain(self)
             random_number = randint(-100, 100)
             new_rain.rect.x = m + random_number
@@ -330,9 +338,8 @@ class Seva:
         # 更新雨下落的Y轴位置
         for read_rain in self.rains.sprites():
 
-            read_rain.rect.y += 1.0
+            read_rain.rect.y += self.settings.rain_speed
             if read_rain.rect.y >= 150:
-
                 self.rains_drop = True
             else:
                 self.rains_drop = False
@@ -401,9 +408,10 @@ class Seva:
     def _check_success(self):
         collision = pygame.sprite.collide_rect(self.character, self.door)
         if collision:
+            if self.theme_type < 3:
+                self.theme_type += 1
+                self.text_save()
             self.__init__()
-            self.theme_type += 1
-            self.text_save()
 
 
     
