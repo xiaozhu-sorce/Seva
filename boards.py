@@ -2,7 +2,7 @@ import pygame
 
 
 class Board:
-    def __init__(self, screen, width, length, x, y):
+    def     __init__(self, screen, width, length, x, y):
         self.screen = screen
 
         self.image = pygame.image.load('images/brick/brick2.png')
