@@ -57,6 +57,7 @@ class Seva:
                         Board(self.screen, 200, 40, 80, 200),
                         Board(self.screen, 150, 45, 800, 200),
                         Board(self.screen, 200, 50, 1000, 100)]
+        self.boards = self.boards1
 
         self.rains_drop = True
         self.pulleted_up = False
@@ -85,6 +86,10 @@ class Seva:
                 self._update_screen_main_4()
             elif self.screen_type == 1:
                 self._update_screen_1()
+                self.boards = self.boards1
+            elif self.screen_type == 2:
+                self._update_screen_2()
+                self.boards = self.boards2
 
     def _character_run(self):
         """更改角色跑步图片"""
@@ -144,7 +149,7 @@ class Seva:
                 sys.exit()
                 self.text_save()
             elif self.option_type == 2:
-                self.screen_type += 1
+                self.screen_type = self.theme_type + 1
 
         # 空格跳跃
         if event.key == pygame.K_SPACE:
@@ -195,7 +200,7 @@ class Seva:
 
     def _check_plat(self): 
         
-        collision = pygame.sprite.spritecollide(self.character, self.boards1, False)
+        collision = pygame.sprite.spritecollide(self.character, self.boards, False)
         if collision:
             self.character.down = False
             self.settings.character_jump_down = 0
@@ -282,7 +287,7 @@ class Seva:
         # 更新
         # self.boards[2].explosion()
         # 刷新
-        for board in self.boards1:
+        for board in self.boards2:
             board.blitme()
         for grass in self.grasses:
             # 是否得到

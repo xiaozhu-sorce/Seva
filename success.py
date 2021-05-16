@@ -10,11 +10,11 @@ class Door(Sprite):
         # 访问屏幕属性
         self.screen_rect = ai_game.screen.get_rect()
 
-        self.image = pygame.image.load('images/spike2.png')
+        self.image = pygame.image.load('images/seva.png')
         self.rect = self.image.get_rect()
 
         self.rect.right = self.screen_rect.right
-        self.rect.top = 500
+        self.rect.top = 50
 
     def show_door(self):
         self.screen.blit(self.image,self.rect)
