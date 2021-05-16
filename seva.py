@@ -50,14 +50,16 @@ class Seva:
                         Board(self.screen, 200, 40, 80, 200),
                         Board(self.screen, 150, 45, 650, 200),
                         Board(self.screen, 200, 50, 1000, 100)]
+
         self.boards2 = [Board(self.screen, 300, 20, 800, 600),
                         Board(self.screen, 100, 40, 500, 550),
+                        Board(self.screen, 80, 40, 900 , 250),
                         # 炸弹右
                         Board(self.screen, 30, 10, 250, 450),
                         # 炸弹左
                         Board(self.screen, 80, 10, 200, 450),
                         Board(self.screen, 250, 20, 500, 350),
-                        Board(self.screen, 200, 40, 1000, 200),
+                        Board(self.screen, 200, 40, 1000, 100),
                         Board(self.screen, 200, 10, 100, 200)]
         self.boards = self.boards1
 
@@ -88,7 +90,7 @@ class Seva:
                 self._update_screen_main_4()
             elif self.screen_type == 1:
                 self._update_screen_1()
-                self.boards = self.boards1
+                self.bsoards = self.boards1
             elif self.screen_type == 2:
                 self._update_screen_2()
                 self.boards = self.boards2
@@ -240,8 +242,8 @@ class Seva:
         self.door.show_door()
 
         self._create_character()
-        self._update_pulleted()
         self._ground()
+        self._update_pulleted()
         self._create_brick_2()
 
         pygame.display.flip()
