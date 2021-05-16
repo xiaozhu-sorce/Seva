@@ -50,13 +50,15 @@ class Seva:
                         Board(self.screen, 200, 40, 80, 200),
                         Board(self.screen, 150, 45, 650, 200),
                         Board(self.screen, 200, 50, 1000, 100)]
-        self.boards2 = [Board(self.screen, 200, 20, 900, 650),
-                        Board(self.screen, 50, 40, 400, 600),
-                        Board(self.screen, 100, 10, 350, 600),
-                        Board(self.screen, 200, 40, 300, 380),
-                        Board(self.screen, 200, 40, 80, 200),
-                        Board(self.screen, 150, 45, 800, 200),
-                        Board(self.screen, 200, 50, 1000, 100)]
+        self.boards2 = [Board(self.screen, 300, 20, 800, 600),
+                        Board(self.screen, 100, 40, 500, 550),
+                        # 炸弹右
+                        Board(self.screen, 30, 10, 250, 450),
+                        # 炸弹左
+                        Board(self.screen, 80, 10, 200, 450),
+                        Board(self.screen, 250, 20, 500, 350),
+                        Board(self.screen, 200, 40, 1000, 200),
+                        Board(self.screen, 200, 10, 100, 200)]
         self.boards = self.boards1
 
         self.rains_drop = True
