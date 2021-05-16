@@ -43,13 +43,20 @@ class Seva:
         self.grasses = pygame.sprite.Group()
         self.grass_score = GrassScore(self.screen)
         self.grasses.add(Grass(self.screen, 800, 460))
-        self.boards = [Board(self.screen, 100, 40, 800, 500),
-                       Board(self.screen, 100, 40, 800, 500),
-                       Board(self.screen, 40, 40, 1000, 400),
-                       Board(self.screen, 200, 20, 600, 300),
-                       Board(self.screen, 200, 40, 400, 280),
-                       Board(self.screen, 100, 40, 100, 150)]
-                       
+        self.boards1 = [Board(self.screen, 100, 40, 1000, 550),
+                        Board(self.screen, 40, 40, 600, 500),
+                        Board(self.screen, 200, 20, 650, 600),
+                        Board(self.screen, 200, 40, 300, 380),
+                        Board(self.screen, 200, 40, 80, 200),
+                        Board(self.screen, 150, 45, 650, 200),
+                        Board(self.screen, 200, 50, 1000, 100)]
+        self.boards2 = [Board(self.screen, 200, 20, 900, 650),
+                        Board(self.screen, 50, 40, 400, 600),
+                        Board(self.screen, 100, 10, 350, 600),
+                        Board(self.screen, 200, 40, 300, 380),
+                        Board(self.screen, 200, 40, 80, 200),
+                        Board(self.screen, 150, 45, 800, 200),
+                        Board(self.screen, 200, 50, 1000, 100)]
 
         self.rains_drop = True
         self.pulleted_up = False
@@ -188,7 +195,7 @@ class Seva:
 
     def _check_plat(self): 
         
-        collision = pygame.sprite.spritecollide(self.character,self.boards,False)
+        collision = pygame.sprite.spritecollide(self.character, self.boards1, False)
         if collision:
             self.character.down = False
             self.settings.character_jump_down = 0
@@ -217,6 +224,22 @@ class Seva:
 
         pygame.display.flip()
 
+    def _update_screen_2(self):
+        self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
+
+        self.rains.draw(self.screen)
+        self.rain_drop()
+        self.check_rain_oracle()
+        self.door.show_door()
+
+        self._create_character()
+        self._update_pulleted()
+        self._ground()
+        self._create_brick_2()
+
+        pygame.display.flip()
+
+
     def _update_pulleted(self):
         """管理废水的类"""
         self.screen.blit(self.pulleted.image, self.pulleted.rect)
@@ -240,9 +263,9 @@ class Seva:
         """更新花花和分数,创建某个页面的平台"""
 
         # 更新
-        self.boards[2].explosion()
+        # self.boards[2].explosion()
         # 刷新
-        for board in self.boards:
+        for board in self.boards1:
             board.blitme()
         for grass in self.grasses:
             # 是否得到
@@ -253,6 +276,22 @@ class Seva:
         fc.update_grasses(self.grasses)
         self.grass_score.show_score()
 
+    def _create_brick_2(self):
+        """更新花花和分数,创建某个页面的平台"""
+
+        # 更新
+        # self.boards[2].explosion()
+        # 刷新
+        for board in self.boards1:
+            board.blitme()
+        for grass in self.grasses:
+            # 是否得到
+            self.check_grass_gain(grass)
+            # 更新小草数目
+            self.grass_score.prep_score()
+        # 遍历grasses刷新
+        fc.update_grasses(self.grasses)
+        self.grass_score.show_score()
 
 
     def _create_character(self):
