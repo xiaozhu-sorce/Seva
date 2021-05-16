@@ -68,8 +68,14 @@ class Seva:
             self._check_character_rain()
             self._check_character_water()
             self._check_plat()
-            if self.screen_type == 0:
+            if self.theme_type == 0 and self.screen_type == 0:
                 self._update_screen_main_1()
+            elif self.theme_type == 1 and self.screen_type == 0:
+                self._update_screen_main_2()
+            elif self.theme_type == 2 and self.screen_type == 0:
+                self._update_screen_main_3()
+            elif self.theme_type == 3 and self.screen_type == 0:
+                self._update_screen_main_4()
             elif self.screen_type == 1:
                 self._update_screen_1()
 
@@ -152,7 +158,7 @@ class Seva:
 
     def _update_screen_main_2(self):
         self.image_bg2 = pygame.image.load('images/bg2.png')
-        self.rect_bg2 = self.image_bg1.get_rect()
+        self.rect_bg2 = self.image_bg2.get_rect()
         self.rect_bg2.midbottom = self.screen_rect.midbottom
         self.screen.blit(self.image_bg2, self.rect_bg2)
         self._update_quit_and_next()
