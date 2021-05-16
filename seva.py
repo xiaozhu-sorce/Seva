@@ -232,8 +232,8 @@ class Seva:
         self.door.show_door()
 
         self._create_character()
-        self._update_pulleted()
         self._ground()
+        self._update_pulleted()
         self._create_brick_1()
 
         pygame.display.flip()
@@ -266,8 +266,8 @@ class Seva:
         new_rain = Rain(self)
         self.rain_height = new_rain.rect_height
         m = 0
-        for x in range(5):
-            m += 200
+        for x in range(4):
+            m += 250
             new_rain = Rain(self)
             random_number = randint(-100, 100)
             new_rain.rect.x = m + random_number
@@ -326,9 +326,8 @@ class Seva:
         # 更新雨下落的Y轴位置
         for read_rain in self.rains.sprites():
 
-            read_rain.rect.y += 1.0
+            read_rain.rect.y += self.settings.rain_speed
             if read_rain.rect.y >= 150:
-
                 self.rains_drop = True
             else:
                 self.rains_drop = False
