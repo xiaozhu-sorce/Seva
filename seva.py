@@ -26,24 +26,34 @@ class Seva:
         self.screen_rect = self.screen.get_rect()
         self.screen_height = self.screen.get_height()
         self.screen_width = self.screen.get_width()
-        
+
         #进入与退出选择标志
         self.option_type = 0
         #主界面选择标志
         self.screen_type = 0
-        
+
         #主题选择标志
         self.theme_type = 0
         self.text_read()
-        
+
         self.door = Door(self)
         self.rains = pygame.sprite.Group()
         self.character = Character(self)
         self.pulleted = Pulluted(self)
-        self.grasses = pygame.sprite.Group()
         self.grass_score = GrassScore(self.screen)
-        self.grasses.add(Grass(self.screen, 800, 460))
-        self.boards1 = [Board(self.screen, 100, 40, 1000, 550),
+
+        self.grasses1 = pygame.sprite.Group()
+        self.grasses1.add(Grass(self.screen, 1000, 460))
+        self.grasses1.add(Grass(self.screen, 100, 160))
+        self.grasses1.add(Grass(self.screen, 1150, 675))
+        self.grasses1.add(Grass(self.screen, 100, 675))
+        self.grasses1.add(Grass(self.screen, 150, 675))
+        self.grasses1.add(Grass(self.screen, 200, 675))
+
+        self.grasses2 = pygame.sprite.Group()
+        self.grasses2.add(Grass(self.screen, 800, 400))
+
+        self.boards1 = [Board(self.screen, 100, 40, 1000, 500),
                         Board(self.screen, 40, 40, 600, 500),
                         Board(self.screen, 200, 20, 650, 600),
                         Board(self.screen, 200, 40, 300, 380),
@@ -52,18 +62,19 @@ class Seva:
                         Board(self.screen, 200, 50, 1000, 100)]
         self.boards2 = [Board(self.screen, 300, 20, 800, 600),
                         Board(self.screen, 100, 40, 500, 550),
+                        Board(self.screen, 50, 20, 900, 250),
                         # 炸弹右
                         Board(self.screen, 30, 10, 250, 450),
                         # 炸弹左
                         Board(self.screen, 80, 10, 200, 450),
                         Board(self.screen, 250, 20, 500, 350),
-                        Board(self.screen, 200, 40, 1000, 200),
+                        Board(self.screen, 200, 40, 1000, 100),
                         Board(self.screen, 200, 10, 100, 200)]
         self.boards = self.boards1
 
         self.rains_drop = True
         self.pulleted_up = False
-        
+
         self.rain_height = 0
         self.x_distance = 0
 
@@ -274,13 +285,13 @@ class Seva:
         # 刷新
         for board in self.boards1:
             board.blitme()
-        for grass in self.grasses:
+        for grass in self.grasses1:
             # 是否得到
             self.check_grass_gain(grass)
             # 更新小草数目
             self.grass_score.prep_score()
         # 遍历grasses刷新
-        fc.update_grasses(self.grasses)
+        fc.update_grasses(self.grasses1)
         self.grass_score.show_score()
 
     def _create_brick_2(self):
@@ -291,13 +302,13 @@ class Seva:
         # 刷新
         for board in self.boards2:
             board.blitme()
-        for grass in self.grasses:
+        for grass in self.grasses1:
             # 是否得到
             self.check_grass_gain(grass)
             # 更新小草数目
             self.grass_score.prep_score()
         # 遍历grasses刷新
-        fc.update_grasses(self.grasses)
+        fc.update_grasses(self.grasses1)
         self.grass_score.show_score()
 
 
@@ -344,7 +355,7 @@ class Seva:
 
     def check_grass_gain(self, grass):
         # 碰撞
-        collisions = pygame.sprite.spritecollide(self.character, self.grasses, True)
+        collisions = pygame.sprite.spritecollide(self.character, self.grasses1, True)
         if collisions:
             # 大于3减少3棵草（兑换心）
             if self.grass_score.grass_score >= 3:
