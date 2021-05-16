@@ -92,6 +92,13 @@ class Seva:
             elif self.screen_type == 2:
                 self._update_screen_2()
                 self.boards = self.boards2
+            elif self.screen_type == 3:
+                self._update_screen_1()
+                self.boards = self.boards1
+            elif self.screen_type == 4:
+                self._update_screen_2()
+                self.boards = self.boards2
+            
 
     def _character_run(self):
         """更改角色跑步图片"""
@@ -390,9 +397,10 @@ class Seva:
     def _check_success(self):
         collision = pygame.sprite.collide_rect(self.character, self.door)
         if collision:
+            if self.theme_type < 3:
+                self.theme_type += 1
+                self.text_save()
             self.__init__()
-            self.theme_type += 1
-            self.text_save()
 
 
     
