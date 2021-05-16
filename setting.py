@@ -7,7 +7,7 @@ class Settings:
         self.bg_color = (255, 255, 255)
 
         # 雨滴速度
-        self.rain_speed = 1.0
+        self.rain_speed = 2.0
 
         #废水速度
         self.pulluted_speed = 1.0
