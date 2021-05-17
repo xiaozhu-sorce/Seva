@@ -3,6 +3,7 @@ from time import sleep
 from pygame.sprite import Sprite
 from setting import Settings
 
+
 class Character(Sprite):
     g = 9.8
 
@@ -44,7 +45,7 @@ class Character(Sprite):
                 self.settings.character_jump_up = 20
                 self.settings.character_jump_down = 0
                 self.jump = False
-             # 玩家下落
+            # 玩家下落
             else:
                 self.settings.character_jump_down += 1
                 self.y += self.settings.character_jump_down
@@ -54,22 +55,22 @@ class Character(Sprite):
 
     def blitme(self):
         self.screen.blit(self.image, self.rect)
-    
+
     def update_character(self):
         # 加载图像并获取矩形
-        if(self.character_type == 1):
+        if self.character_type == 1:
             self.image = pygame.image.load('images/person1.png')
-        elif(self.character_type == 2):
+        elif self.character_type == 2:
             self.image = pygame.image.load('images/person2.png')
-        elif(self.character_type == 3):
-            self.image = pygame.image.load('images/person3.png') 
-        elif(self.character_type == 4):
-            self.image = pygame.image.load('images/person4.png') 
-        elif(self.character_type == 5):
-            self.image = pygame.image.load('images/person5.png') 
-        elif(self.character_type == 6):
-            self.image = pygame.image.load('images/person6.png') 
-        
+        elif self.character_type == 3:
+            self.image = pygame.image.load('images/person3.png')
+        elif self.character_type == 4:
+            self.image = pygame.image.load('images/person4.png')
+        elif self.character_type == 5:
+            self.image = pygame.image.load('images/person5.png')
+        elif self.character_type == 6:
+            self.image = pygame.image.load('images/person6.png')
+
     def reset(self):
         self.character_type = 1
         self.update_character()
