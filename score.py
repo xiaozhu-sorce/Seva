@@ -37,5 +37,3 @@ class GrassScore:
         grass.update_grass()
         heart = Heart(self.screen, 1000, 10)
         heart.update_heart()
-
-

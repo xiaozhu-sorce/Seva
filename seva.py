@@ -29,7 +29,7 @@ class Seva:
         self.screen_width = self.screen.get_width()
 
         # 进入与退出选择标志
-        self.option_type = 0
+        self.option_type = 2
         # 主界面选择标志
         self.screen_type = 0
 
@@ -250,8 +250,8 @@ class Seva:
 
         self._create_character()
         self._ground()
-        self._update_pulleted()
         self._create_brick_1()
+        self._update_pulleted()
 
         pygame.display.flip()
 
@@ -265,8 +265,8 @@ class Seva:
 
         self._create_character()
         self._ground()
-        self._update_pulleted()
         self._create_brick_2()
+        self._update_pulleted()
 
         pygame.display.flip()
 
@@ -378,10 +378,7 @@ class Seva:
             self.__init__()
 
     def _update_quit_and_next(self):
-        if self.option_type == 0:
-            self.image_quit = pygame.image.load('images/title2(un).png')
-            self.image_next = pygame.image.load('images/title1(un).png')
-        elif self.option_type == 1:
+        if self.option_type == 1:
             self.image_quit = pygame.image.load('images/title2.png')
             self.image_next = pygame.image.load('images/title1(un).png')
         elif self.option_type == 2:
