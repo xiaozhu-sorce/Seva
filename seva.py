@@ -73,6 +73,21 @@ class Seva:
                         Board(self.screen, 200, 40, 1000, 100),
                         Board(self.screen, 200, 10, 100, 200)]
 
+        self.boards3 = [Board(self.screen, 150, 40, 800, 600),
+                        Board(self.screen, 400, 20, 500, 450),
+                        Board(self.screen, 400, 20, 100, 250),
+                        Board(self.screen, 100, 40, 650, 170),
+                        Board(self.screen, 500, 40, 900, 250),
+                        Board(self.screen, 200, 50, 1000, 100)]
+
+        self.boards4 = [Board(self.screen, 400, 30, 450, 600),
+                        Board(self.screen, 150, 20, 600, 450),
+                        Board(self.screen, 300, 20, 400, 300),
+                        Board(self.screen, 100, 10, 300, 170),
+                        Board(self.screen, 80, 10, 620, 150),
+                        Board(self.screen, 300, 40, 900, 400),
+                        Board(self.screen, 200, 50, 1000, 100)]
+
         self.boards = self.boards1
 
         self.rains_drop = True
@@ -101,17 +116,18 @@ class Seva:
             elif self.theme_type == 3 and self.screen_type == 0:
                 self._update_screen_main_4()
             elif self.screen_type == 1:
-                self._update_screen_1()
-                self.bsoards = self.boards1
+                self._update_screen(self.grasses1, self.boards1)
+                self.boards = self.boards1
             elif self.screen_type == 2:
-                self._update_screen_2()
+                self._update_screen(self.grasses1, self.boards2)
                 self.boards = self.boards2
             elif self.screen_type == 3:
-                self._update_screen_1()
-                self.boards = self.boards1
+                fc.update_board(self.boards3[0])
+                self._update_screen(self.grasses1, self.boards3)
+                self.boards = self.boards3
             elif self.screen_type == 4:
-                self._update_screen_2()
-                self.boards = self.boards2
+                self._update_screen(self.grasses1, self.boards4)
+                self.boards = self.boards4
 
     def _character_run(self):
         """更改角色跑步图片"""
@@ -235,12 +251,12 @@ class Seva:
 
             for board in collision:
                 if board == self.boards2[4]:
-                    board.explosion()
+                    board.if_explode = True
 
         else:
             self.character.down = True
 
-    def _update_screen_1(self):
+    def _update_screen(self, grasses, boards):
         self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
 
         self.rains.draw(self.screen)
@@ -251,22 +267,7 @@ class Seva:
         self._create_character()
         self._ground()
         self._update_pulleted()
-        self._create_brick_1()
-
-        pygame.display.flip()
-
-    def _update_screen_2(self):
-        self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
-
-        self.rains.draw(self.screen)
-        self.rain_drop()
-        self.check_rain_oracle()
-        self.door.show_door()
-
-        self._create_character()
-        self._ground()
-        self._update_pulleted()
-        self._create_brick_2()
+        self._create_brick(grasses, boards)
 
         pygame.display.flip()
 
@@ -289,38 +290,18 @@ class Seva:
             new_rain.rect.x = m + random_number
             self.rains.add(new_rain)
 
-    def _create_brick_1(self):
+    def _create_brick(self, grasses, boards):
         """更新花花和分数,创建某个页面的平台"""
-
-        # 更新
-        # self.boards[2].explosion()
         # 刷新
-        for board in self.boards1:
-            board.blitme()
-        for grass in self.grasses1:
+        for board in boards:
+            board.blitme(board)
+        for grass in grasses:
             # 是否得到
             self.check_grass_gain(grass)
             # 更新小草数目
             self.grass_score.prep_score()
         # 遍历grasses刷新
-        fc.update_grasses(self.grasses1)
-        self.grass_score.show_score()
-
-    def _create_brick_2(self):
-        """更新花花和分数,创建某个页面的平台"""
-
-        # 更新
-        # self.boards[2].explosion()
-        # 刷新
-        for board in self.boards2:
-            board.blitme()
-        for grass in self.grasses1:
-            # 是否得到
-            self.check_grass_gain(grass)
-            # 更新小草数目
-            self.grass_score.prep_score()
-        # 遍历grasses刷新
-        fc.update_grasses(self.grasses1)
+        fc.update_grasses(grasses)
         self.grass_score.show_score()
 
     def _create_character(self):
