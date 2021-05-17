@@ -2,6 +2,7 @@
 import pygame
 from pygame.sprite import Sprite
 
+
 class Door(Sprite):
     def __init__(self,ai_game):
         super().__init__()
@@ -17,4 +18,4 @@ class Door(Sprite):
         self.rect.top = 50
 
     def show_door(self):
-        self.screen.blit(self.image,self.rect)
+        self.screen.blit(self.image, self.rect)

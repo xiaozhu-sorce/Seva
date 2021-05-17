@@ -15,6 +15,7 @@ from score import GrassScore
 from pygame.sprite import Group
 from success import Door
 
+
 class Seva:
 
     def __init__(self):
@@ -26,24 +27,34 @@ class Seva:
         self.screen_rect = self.screen.get_rect()
         self.screen_height = self.screen.get_height()
         self.screen_width = self.screen.get_width()
-        
-        #进入与退出选择标志
+
+        # 进入与退出选择标志
         self.option_type = 0
-        #主界面选择标志
+        # 主界面选择标志
         self.screen_type = 0
-        
-        #主题选择标志
+
+        # 主题选择标志
         self.theme_type = 0
         self.text_read()
-        
+
         self.door = Door(self)
         self.rains = pygame.sprite.Group()
         self.character = Character(self)
         self.pulleted = Pulluted(self)
-        self.grasses = pygame.sprite.Group()
         self.grass_score = GrassScore(self.screen)
-        self.grasses.add(Grass(self.screen, 800, 460))
-        self.boards1 = [Board(self.screen, 100, 40, 1000, 550),
+
+        self.grasses1 = pygame.sprite.Group()
+        self.grasses1.add(Grass(self.screen, 1000, 460))
+        self.grasses1.add(Grass(self.screen, 100, 160))
+        self.grasses1.add(Grass(self.screen, 1150, 675))
+        self.grasses1.add(Grass(self.screen, 100, 675))
+        self.grasses1.add(Grass(self.screen, 150, 675))
+        self.grasses1.add(Grass(self.screen, 200, 675))
+
+        self.grasses2 = pygame.sprite.Group()
+        self.grasses2.add(Grass(self.screen, 800, 400))
+
+        self.boards1 = [Board(self.screen, 100, 40, 1000, 500),
                         Board(self.screen, 40, 40, 600, 500),
                         Board(self.screen, 200, 20, 650, 600),
                         Board(self.screen, 200, 40, 300, 380),
@@ -53,19 +64,20 @@ class Seva:
 
         self.boards2 = [Board(self.screen, 300, 20, 800, 600),
                         Board(self.screen, 100, 40, 500, 550),
-                        Board(self.screen, 80, 40, 900 , 250),
+                        Board(self.screen, 50, 20, 900, 250),
                         # 炸弹右
                         Board(self.screen, 30, 10, 250, 450),
                         # 炸弹左
-                        Board(self.screen, 80, 10, 200, 450),
+                        Board(self.screen, 80, 10, 170, 450, True),
                         Board(self.screen, 250, 20, 500, 350),
                         Board(self.screen, 200, 40, 1000, 100),
                         Board(self.screen, 200, 10, 100, 200)]
+
         self.boards = self.boards1
 
         self.rains_drop = True
         self.pulleted_up = False
-        
+
         self.rain_height = 0
         self.x_distance = 0
 
@@ -100,7 +112,6 @@ class Seva:
             elif self.screen_type == 4:
                 self._update_screen_2()
                 self.boards = self.boards2
-            
 
     def _character_run(self):
         """更改角色跑步图片"""
@@ -130,7 +141,7 @@ class Seva:
                 self._check_keyup_events(event)
 
     def _check_keyup_events(self, event):
-        #暂停跑动
+        # 暂停跑动
         if event.key == pygame.K_RIGHT:
             self.character.moving_right = False
             self.character.character_type = 1
@@ -165,9 +176,14 @@ class Seva:
         # 空格跳跃
         if event.key == pygame.K_SPACE:
             self.character.jump = True
-        
+
         if event.key == pygame.K_ESCAPE:
             sys.exit()
+        
+        #按R健重新开始游戏
+        if event.key == pygame.K_r:
+            self.theme_type = 0
+            self.text_save()
 
     def _update_screen_main_1(self):
         self.image_bg1 = pygame.image.load('images/bg1.png')
@@ -188,7 +204,7 @@ class Seva:
         self.grass_score.heart_score = 3
 
         pygame.display.flip()
-    
+
     def _update_screen_main_3(self):
         self.image_bg3 = pygame.image.load('images/bg3.png')
         self.rect_bg3 = self.image_bg3.get_rect()
@@ -209,8 +225,8 @@ class Seva:
 
         pygame.display.flip()
 
-    def _check_plat(self): 
-        
+    def _check_plat(self):
+
         collision = pygame.sprite.spritecollide(self.character, self.boards, False)
         if collision:
             self.character.down = False
@@ -221,9 +237,13 @@ class Seva:
                     self.character.down = True
                 elif self.character.rect.bottom > c.rect.top and self.character.jump == False:
                     self.settings.character_jump_up = 20
+
+            for board in collision:
+                if board == self.boards2[4]:
+                    board.explosion()
+
         else:
             self.character.down = True
-
 
     def _update_screen_1(self):
         self.screen.fill((255, 255, 255))  # 需要再绘制背景颜色，不然会有阴影
@@ -255,13 +275,12 @@ class Seva:
 
         pygame.display.flip()
 
-
     def _update_pulleted(self):
         """管理废水的类"""
         self.screen.blit(self.pulleted.image, self.pulleted.rect)
         if self.pulleted_up:
-            if (self.pulleted.rect.y >= self.screen_rect.top+50):
-                self.pulleted.rect.y -= self.settings.pulluted_speed    
+            if (self.pulleted.rect.y >= self.screen_rect.top + 50):
+                self.pulleted.rect.y -= self.settings.pulluted_speed
 
     def create_rain(self):
         """判断行列有多少元素,设置间距,生产雨添加到Group组"""
@@ -283,13 +302,13 @@ class Seva:
         # 刷新
         for board in self.boards1:
             board.blitme()
-        for grass in self.grasses:
+        for grass in self.grasses1:
             # 是否得到
             self.check_grass_gain(grass)
             # 更新小草数目
             self.grass_score.prep_score()
         # 遍历grasses刷新
-        fc.update_grasses(self.grasses)
+        fc.update_grasses(self.grasses1)
         self.grass_score.show_score()
 
     def _create_brick_2(self):
@@ -300,22 +319,20 @@ class Seva:
         # 刷新
         for board in self.boards2:
             board.blitme()
-        for grass in self.grasses:
+        for grass in self.grasses1:
             # 是否得到
             self.check_grass_gain(grass)
             # 更新小草数目
             self.grass_score.prep_score()
         # 遍历grasses刷新
-        fc.update_grasses(self.grasses)
+        fc.update_grasses(self.grasses1)
         self.grass_score.show_score()
-
 
     def _create_character(self):
         """生成人物"""
         self.character.blitme()
         self.character.move_character()
         self.character.jump_up_character()
-        
 
     def _ground(self):
         """地面"""
@@ -340,7 +357,7 @@ class Seva:
             if read_rain.rect.bottom >= self.screen_height:
                 self.rains.remove(read_rain)
                 self.pulleted_up = True
-                
+
         if self.rains_drop:
             self.create_rain()
 
@@ -352,11 +369,11 @@ class Seva:
 
     def check_grass_gain(self, grass):
         # 碰撞
-        collisions = pygame.sprite.spritecollide(self.character, self.grasses, True)
+        collisions = pygame.sprite.spritecollide(self.character, self.grasses1, True)
         if collisions:
             # 大于3减少3棵草（兑换心）
-            if self.grass_score.grass_score >= 3:
-                self.grass_score.grass_score -= 3
+            if self.grass_score.grass_score >= 2:
+                self.grass_score.grass_score -= 2
                 self.grass_score.heart_score += 1
             else:
                 self.grass_score.grass_score += 1
@@ -378,23 +395,23 @@ class Seva:
 
         self.rect_quit = self.image_quit.get_rect()
         self.rect_next = self.image_next.get_rect()
-        
+
         self.rect_quit.bottomleft = self.screen_rect.midbottom
         self.rect_next.bottomright = self.screen_rect.bottomright
-        
+
         self.screen.blit(self.image_quit, self.rect_quit)
         self.screen.blit(self.image_next, self.rect_next)
-    
+
     def _check_character_rain(self):
-        collision = pygame.sprite.spritecollide(self.character,self.rains,True)
+        collision = pygame.sprite.spritecollide(self.character, self.rains, True)
         if collision:
             if self.grass_score.heart_score == 1:
                 self.__init__()
             else:
                 self.grass_score.heart_score -= 1
                 self.grass_score.prep_score()
-    
-    #通关判断
+
+    # 通关判断
     def _check_success(self):
         collision = pygame.sprite.collide_rect(self.character, self.door)
         if collision:
@@ -403,19 +420,17 @@ class Seva:
                 self.text_save()
             self.__init__()
 
-
-    
     def text_save(self):
-        file = open('theme.txt','w')
+        file = open('theme.txt', 'w')
         file.write(str(self.theme_type))
         file.close()
-    
+
     def text_read(self):
-        file = open('theme.txt','r')
+        file = open('theme.txt', 'r')
         self.theme_type = int(file.read())
         file.close()
-    
-            
+
+
 if __name__ == '__main__':
     seva = Seva()
     seva.run_game()
