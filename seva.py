@@ -195,6 +195,11 @@ class Seva:
 
         if event.key == pygame.K_ESCAPE:
             sys.exit()
+        
+        #按R健重新开始游戏
+        if event.key == pygame.K_r:
+            self.theme_type = 0
+            self.text_save()
 
     def _update_screen_main_1(self):
         self.image_bg1 = pygame.image.load('images/bg1.png')
