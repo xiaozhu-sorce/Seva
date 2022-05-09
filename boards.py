@@ -2,16 +2,16 @@ import pygame
 
 
 class Board:
-    def __init__(self, screen, width, length, x, y, ifWarning=False):
+    def __init__(self, screen, width, length, x, y, warning=False):
 
         self.screen = screen
-        self.ifWarning = ifWarning
+        self.ifWarning = warning
         self.if_explode = False
         # 移动速度、方向
         self.move_speed = 5
         self.direction = 1
 
-        if ifWarning:
+        if warning:
             self.image_warning = pygame.image.load('images/brick/brick2_warning.png')
             self.image_warning = pygame.transform.scale(self.image_warning, (width, length))
             self.rect = self.image_warning.get_rect()

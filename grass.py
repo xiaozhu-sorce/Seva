@@ -11,7 +11,7 @@ class Grass(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-    def update_grass(self):
+    def draw_grass(self):
         self.screen.blit(self.image, self.rect)
 
 
@@ -24,5 +24,5 @@ class Heart:
         self.rect.x = x
         self.rect.y = y
 
-    def update_heart(self):
+    def draw_heart(self):
         self.screen.blit(self.image, self.rect)

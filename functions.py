@@ -1,6 +1,6 @@
 def update_grasses(grasses):
     for grass in grasses:
-        grass.update_grass()
+        grass.draw_grass()
 
 
 def update_board(board):
