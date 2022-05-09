@@ -38,7 +38,7 @@ class Board:
         elif self.rect.left <= 0:
             return True
 
-    def blitme(self, board):
+    def draw_boards(self, board):
         if self.ifWarning:
             if self.if_explode:
                 board.explosion()
