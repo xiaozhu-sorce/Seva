@@ -1,4 +1,6 @@
 import sys
+from time import sleep
+
 import pygame
 import functions as fc
 from rain import Rain
@@ -11,6 +13,7 @@ from polluted import Polluted
 from score import Score
 from pygame.sprite import Group
 from success import Door
+from reports import Reports
 
 
 class Seva:
@@ -41,6 +44,9 @@ class Seva:
         self.character = Character(self)
         self.polluted = Polluted(self)
         self.score = Score(self.screen)
+        self.report = Reports(self.screen)
+
+        self.show_report = False
 
         self.rains_drop = True
         self.rain_height = 0
@@ -135,6 +141,8 @@ class Seva:
     def _update_screen(self, grasses, boards):
         # 需要再绘制背景颜色，不然会有阴影
         self.screen.fill((255, 255, 255))
+        if self.show_report:
+            self.report.show_text(0)
 
         self.rains.draw(self.screen)
         self._rain_drop()
@@ -205,6 +213,9 @@ class Seva:
             self.character.character_type = 4
             self.character.update_character()
 
+        if event.key == pygame.K_1:
+            self.show_report = False
+
     def _check_keydown_events(self, event):
         # 左右跑动
         if event.key == pygame.K_RIGHT:
@@ -229,6 +240,11 @@ class Seva:
         # 空格跳跃
         if event.key == pygame.K_SPACE:
             self.character.jump = True
+
+        # 1-9控制
+        if event.key == pygame.K_1:
+            self.show_report = True
+            self._create_report()
 
         # esc退出
         if event.key == pygame.K_ESCAPE:
@@ -369,6 +385,9 @@ class Seva:
         self.theme_type = int(file.read())
         file.close()
 
+    def _create_report(self):
+        if len(self.report.text) == 0:
+            self.report.prep_text()
 
 if __name__ == '__main__':
     seva = Seva()
