@@ -16,8 +16,6 @@ class Reports:
         self.font = pygame.font.SysFont('arialunicode', 24)
 
         self.text = {}
-        self.index = 0
-        self.picture_file = '/Users/xiaozhu/PycharmProjects/Seva/report/report' + str(self.index) + '.png'
 
         self.url = "https://www.mee.gov.cn/"
 
@@ -49,24 +47,28 @@ class Reports:
 
     def save_pictures(self, url_picture):
         res = requests.get(url_picture)
-        # 发出请求，并把返回的结果放在变量res中
-        pic = res.content
         # 把Reponse对象的内容以二进制数据的形式返回
-        photo = open(self.picture_file, 'wb')
+        pic = res.content
         # 新建了一个文件ppt.jpg，这里的文件没加路径，它会被保存在程序运行的当前目录下。
-        # 图片内容需要以二进制wb读写。你在学习open()函数时接触过它。
-        photo.write(pic)
+        photo = open(self.picture_file, 'wb')
         # 获取pic的二进制内容
+        photo.write(pic)
         photo.close()
-        # 关闭文件
 
     def pyspider_pictures(self, url_page):
+        print(url_page)
         page_text = requests.get(url=url_page, headers=self.headers)
         response = bytes(page_text.text, page_text.encoding).decode('utf-8', 'ignore')
         soup = BeautifulSoup(response, 'lxml')
 
-        if self.index == 0:
+        if self.index == 1:
             p_list = soup.select('.Custom_UnionStyle > div > font > img')
+        elif self.index == 4:
+            p_list = soup.select('.Custom_UnionStyle > p > img')
+        elif self.index == 6:
+            p_list = soup.select('.TRS_Editor > p > img')
+        elif self.index == 7 or self.index == 8 or self.index == 10:
+            p_list = soup.select('.TRS_Editor > div > img')
         else:
             p_list = soup.select('.Custom_UnionStyle > div > img')
 
@@ -75,13 +77,14 @@ class Reports:
         self.save_pictures(url)
 
     def get_pictures(self, key):
-        print(key)
+        self.picture_file = '/Users/xiaozhu/PycharmProjects/Seva/report/report' + str(self.index) + '.png'
+
         if not os.path.exists(self.picture_file):
             self.pyspider_pictures(key)
         self.image_bg = pygame.image.load(self.picture_file)
 
         self.image_rect = self.image_bg.get_rect()
-        self.image_rect.midtop = self.screen_rect.midtop
+        self.image_rect.midtop = (self.screen.get_rect().width / 2, self.screen.get_rect().height / 4)
 
         self.screen.blit(self.image_bg, self.image_rect)
 
@@ -89,12 +92,15 @@ class Reports:
         self.index = index
 
         item = self.text.items()
-        key, value = list(item)[self.index]
-        self.get_pictures(key)
+        if self.index < len(self.text):
+            key, value = list(item)[self.index - 1]
+            self.get_pictures(key)
+        else:
+            value = "error"
 
         self.report_text = self.font.render(value, True, self.text_color, (255, 255, 255))
 
-        self.report_rect = self.screen_rect
-        self.report_rect.x = 0
+        self.report_rect = self.report_text.get_rect()
+        self.report_rect.midtop = (self.screen.get_rect().width / 2, 50)
 
         self.screen.blit(self.report_text, self.report_rect)

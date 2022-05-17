@@ -1,5 +1,5 @@
 import sys
-from time import sleep
+import threading
 
 import pygame
 import functions as fc
@@ -23,6 +23,8 @@ class Seva:
         pygame.init()
         pygame.display.set_caption("Seva")
         self.settings = Settings()
+        self.WIDTH = self.settings.screen_width
+        self.HEIGHT = self.settings.screen_height
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
         self.screen.fill(self.settings.bg_color)
         self.screen_rect = self.screen.get_rect()
@@ -47,6 +49,7 @@ class Seva:
         self.report = Reports(self.screen)
 
         self.show_report = False
+        self.key_number = 1
 
         self.rains_drop = True
         self.rain_height = 0
@@ -100,6 +103,10 @@ class Seva:
 
         self.polluted_up = False
 
+        self.clock = pygame.time.Clock()
+
+        self.t1 = threading.Thread(target=self.threading_body, name='report线程')
+
     def run_game(self):
         self._create_rain()
 
@@ -141,8 +148,6 @@ class Seva:
     def _update_screen(self, grasses, boards):
         # 需要再绘制背景颜色，不然会有阴影
         self.screen.fill((255, 255, 255))
-        if self.show_report:
-            self.report.show_text(0)
 
         self.rains.draw(self.screen)
         self._rain_drop()
@@ -213,7 +218,12 @@ class Seva:
             self.character.character_type = 4
             self.character.update_character()
 
-        if event.key == pygame.K_1:
+        if pygame.key.name(event.key).isdigit():
+            n = int(pygame.key.name(event.key))
+            if n == 0:
+                self.key_number = 10
+            else:
+                self.key_number = n
             self.show_report = False
 
     def _check_keydown_events(self, event):
@@ -242,9 +252,8 @@ class Seva:
             self.character.jump = True
 
         # 1-9控制
-        if event.key == pygame.K_1:
+        if str(pygame.key.name(event.key)).isdigit():
             self.show_report = True
-            self._create_report()
 
         # esc退出
         if event.key == pygame.K_ESCAPE:
@@ -339,15 +348,15 @@ class Seva:
         collision = pygame.sprite.spritecollide(self.character, self.rains, True)  # 第三个参数用来确定是否删除
         if collision:
             if self.score.heart_score == 1:
-                self.__init__()
+                self.show_go_screen()
             else:
                 self.score.heart_score -= 1
                 self.score.prep_score()
 
     def _check_character_water(self):
         """检测污水和人物是否碰撞"""
-        if self.character.rect.top > self.polluted.rect.top + 200:
-            self.__init__()
+        if self.character.rect.top > self.polluted.rect.top + 100:
+            self.show_go_screen()
 
     def _check_plat(self):
         collision = pygame.sprite.spritecollide(self.character, self.boards, False)
@@ -373,7 +382,11 @@ class Seva:
             if self.theme_type < 3:
                 self.theme_type += 1
                 self.theme_save()
-            self.__init__()
+                self.game_pass()
+                self.__init__()
+            elif self.theme_type == 3:
+                self.game_pass()
+                self.show_reports()
 
     def theme_save(self):
         file = open('theme.txt', 'w')
@@ -385,9 +398,56 @@ class Seva:
         self.theme_type = int(file.read())
         file.close()
 
-    def _create_report(self):
-        if len(self.report.text) == 0:
-            self.report.prep_text()
+    # 开启新线程
+    def threading_body(self):
+        self.report.prep_text()
+        self.report.index = self.key_number
+        self.report.show_text(self.key_number)
+
+    def wait_for_key(self):
+        waiting = True
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    waiting = False
+
+    def draw_text(self, text, size, color, x, y):
+        font = pygame.font.SysFont(None, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (x, y)
+        self.screen.blit(text_surface, text_rect)
+
+    def show_go_screen(self):
+        """游戏失败"""
+        self.screen.fill((192, 192, 192))
+        self.draw_text("GAME OVER", 72, self.settings.bg_color, self.WIDTH / 2, self.HEIGHT / 4)
+        self.draw_text("Press a key to play again", 48, self.settings.bg_color, self.WIDTH / 2, self.HEIGHT / 2)
+        pygame.display.flip()
+        self.wait_for_key()
+        self.__init__()
+
+    def game_pass(self):
+        """通过本关卡页面"""
+        self.screen.fill((192, 192, 192))
+        self.draw_text("CONGRATULATION!", 72, self.settings.bg_color, self.WIDTH / 2, self.HEIGHT / 4)
+        self.draw_text("Press a number key to check report!", 48, self.settings.bg_color, self.WIDTH / 2, self.HEIGHT / 2)
+        pygame.display.flip()
+        self.wait_for_key()
+
+    def show_reports(self):
+        """游戏全部通关后可以显示"""
+        while True:
+            self.screen.fill((255, 255, 255))
+            if self.show_report:
+                if not self.t1.is_alive() and len(self.report.text) == 0:
+                    self.t1.start()
+                else:
+                    print(self.key_number)
+                    self.report.show_text(self.key_number)
+            self._check_events()
+            pygame.display.flip()
+
 
 if __name__ == '__main__':
     seva = Seva()
