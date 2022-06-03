@@ -51,7 +51,7 @@ class Character(Sprite):
                 self.y += self.settings.character_jump_down
 
         self.rect.y = self.y
-        sleep(0.002)
+        sleep(0.01)
 
     def draw_character(self):
         self.screen.blit(self.image, self.rect)

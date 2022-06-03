@@ -8,7 +8,7 @@ from random import randint
 from setting import Settings
 from character import Character
 from boards import Board
-from grass import Grass
+from grass import Grass, Heart
 from polluted import Polluted
 from score import Score
 from pygame.sprite import Group
@@ -47,6 +47,9 @@ class Seva:
         self.polluted = Polluted(self)
         self.score = Score(self.screen)
         self.report = Reports(self.screen)
+        self.grass = Grass(self.screen, 1100, 10)
+        self.heart = Heart(self.screen, 1000, 10)
+        self.image_ground = pygame.image.load('images/ground.png')
 
         self.show_report = False
         self.key_number = 1
@@ -63,7 +66,29 @@ class Seva:
         self.grasses1.add(Grass(self.screen, 200, 675))
 
         self.grasses2 = Group()
-        self.grasses2.add(Grass(self.screen, 800, 400))
+        self.grasses2.add(Grass(self.screen, 170, 410))
+        self.grasses2.add(Grass(self.screen, 100, 160))
+        self.grasses2.add(Grass(self.screen, 1150, 675))
+        self.grasses2.add(Grass(self.screen, 1000, 560))
+        self.grasses2.add(Grass(self.screen, 100, 675))
+        self.grasses2.add(Grass(self.screen, 150, 675))
+        self.grasses2.add(Grass(self.screen, 200, 675))
+
+        self.grasses3 = Group()
+        self.grasses3.add(Grass(self.screen, 100, 210))
+        self.grasses3.add(Grass(self.screen, 1150, 210))
+        self.grasses3.add(Grass(self.screen, 1150, 675))
+        self.grasses3.add(Grass(self.screen, 100, 675))
+        self.grasses3.add(Grass(self.screen, 150, 675))
+        self.grasses3.add(Grass(self.screen, 200, 675))
+
+        self.grasses4 = Group()
+        self.grasses4.add(Grass(self.screen, 300, 130))
+        self.grasses4.add(Grass(self.screen, 1150, 360))
+        self.grasses4.add(Grass(self.screen, 1150, 675))
+        self.grasses4.add(Grass(self.screen, 100, 675))
+        self.grasses4.add(Grass(self.screen, 150, 675))
+        self.grasses4.add(Grass(self.screen, 200, 675))
 
         self.boards1 = [Board(self.screen, 100, 40, 1000, 500),
                         Board(self.screen, 40, 40, 600, 500),
@@ -95,7 +120,7 @@ class Seva:
                         Board(self.screen, 150, 20, 600, 450),
                         Board(self.screen, 300, 20, 400, 300),
                         Board(self.screen, 100, 10, 300, 170),
-                        Board(self.screen, 80, 10, 620, 150),
+                        Board(self.screen, 80, 10, 675, 150),
                         Board(self.screen, 300, 40, 900, 400),
                         Board(self.screen, 200, 50, 1000, 100)]
 
@@ -125,14 +150,14 @@ class Seva:
                 self._update_screen(self.grasses1, self.boards1)
                 self.boards = self.boards1
             elif self.screen_type == 2:
-                self._update_screen(self.grasses1, self.boards2)
+                self._update_screen(self.grasses2, self.boards2)
                 self.boards = self.boards2
             elif self.screen_type == 3:
                 fc.update_board(self.boards3[0])
-                self._update_screen(self.grasses1, self.boards3)
+                self._update_screen(self.grasses3, self.boards3)
                 self.boards = self.boards3
             elif self.screen_type == 4:
-                self._update_screen(self.grasses1, self.boards4)
+                self._update_screen(self.grasses4, self.boards4)
                 self.boards = self.boards4
 
     def _update_screen_main(self, fileload):
@@ -159,6 +184,11 @@ class Seva:
         self._create_brick(boards)
         self._create_grasses(grasses)
         self._update_pulleted()
+
+        # 绘制右上角的草的图案
+        self.grass.draw_grass()
+        # 绘制右上角的心的图案
+        self.heart.draw_heart()
 
         pygame.display.flip()
 
@@ -290,14 +320,12 @@ class Seva:
 
     def _create_grasses(self, grasses):
         """更新花花和分数"""
-        for grass in grasses:
-            # 是否得到
-            self._check_grass_gain(grass)
+        self._check_grass_gain(grasses)
         # 更新小草数目
         self.score.prep_score()
+        self.score.show_score()
         # 遍历grasses刷新
         fc.update_grasses(grasses)
-        self.score.show_score()
 
     def _create_character(self):
         """生成人物"""
@@ -307,7 +335,6 @@ class Seva:
 
     def _create_ground(self):
         """绘制地面"""
-        self.image_ground = pygame.image.load('images/ground.png')
         self.rect_ground = self.image_ground.get_rect()
         self.rect_ground.midbottom = self.screen_rect.midbottom
         self.screen.blit(self.image_ground, self.rect_ground)
@@ -315,7 +342,6 @@ class Seva:
     def _rain_drop(self):
         # 更新雨下落的Y轴位置
         for read_rain in self.rains.sprites():
-
             read_rain.rect.y += self.settings.rain_speed
             if read_rain.rect.y >= 150:
                 self.rains_drop = True
@@ -332,9 +358,9 @@ class Seva:
         if self.rains_drop:
             self._create_rain()
 
-    def _check_grass_gain(self, grass):
+    def _check_grass_gain(self,grasses):
         """检测人物是否获得某个花花"""
-        collisions = pygame.sprite.spritecollide(self.character, self.grasses1, True)
+        collisions = pygame.sprite.spritecollide(self.character, grasses, True)
         if collisions:
             # 大于3减少3棵草（兑换心）
             if self.score.grass_score >= 2:

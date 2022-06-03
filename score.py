@@ -1,6 +1,5 @@
 import pygame
 import pygame.font
-from grass import Grass, Heart
 
 
 class Score:
@@ -34,9 +33,3 @@ class Score:
     def show_score(self):
         self.screen.blit(self.score_grass, self.grass_score_rect)
         self.screen.blit(self.score_heart, self.heart_score_rect)
-        # 绘制右上角的草的图案
-        grass = Grass(self.screen, 1100, 10)
-        grass.draw_grass()
-        # 绘制右上角的心的图案
-        heart = Heart(self.screen, 1000, 10)
-        heart.draw_heart()
