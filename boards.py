@@ -25,20 +25,22 @@ class Board:
         self.x = float(self.rect.x)
 
     def explosion(self):
+        """自动掉落的木板"""
         self.rect.y += 10
 
     def move_left_right(self):
+        """左右移动的木板"""
         self.x += self.move_speed * self.direction
         self.rect.x = self.x
 
     def check_edges(self):
+        """检查木板是否到达边界"""
         screen_rect = self.screen.get_rect()
-        if self.rect.right >= screen_rect.right:
-            return True
-        elif self.rect.left <= 0:
+        if self.rect.right >= screen_rect.right or self.rect.left <= 0:
             return True
 
     def draw_boards(self, board):
+        """根据是否掉落以及木板是否绘制木板"""
         if self.ifWarning:
             if self.if_explode:
                 board.explosion()

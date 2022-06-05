@@ -1,3 +1,4 @@
+import random
 import sys
 import threading
 
@@ -126,8 +127,6 @@ class Seva:
 
         self.boards = self.boards1
 
-        self.polluted_up = False
-
         self.clock = pygame.time.Clock()
 
         self.t1 = threading.Thread(target=self.threading_body, name='report线程')
@@ -174,8 +173,8 @@ class Seva:
         # 需要再绘制背景颜色，不然会有阴影
         self.screen.fill((255, 255, 255))
 
-        self.rains.draw(self.screen)
         self._rain_drop()
+        self.rains.draw(self.screen)
         self._check_rain_oracle()
         self.door.show_door()
 
@@ -183,7 +182,7 @@ class Seva:
         self._create_ground()
         self._create_brick(boards)
         self._create_grasses(grasses)
-        self._update_pulleted()
+        self.polluted.update_pulleted()
 
         # 绘制右上角的草的图案
         self.grass.draw_grass()
@@ -294,25 +293,6 @@ class Seva:
             self.theme_type = 0
             self.theme_save()
 
-    def _update_pulleted(self):
-        """管理废水的方法"""
-        self.screen.blit(self.polluted.image, self.polluted.rect)
-        if self.polluted_up:
-            if self.polluted.rect.y >= self.screen_rect.top + 50:
-                self.polluted.rect.y -= self.settings.polluted_speed
-
-    def _create_rain(self):
-        """判断行列有多少元素,设置间距,生产雨添加到Group组"""
-        new_rain = Rain(self)
-        self.rain_height = new_rain.rect_height
-        m = 0
-        for x in range(4):
-            m += 250
-            new_rain = Rain(self)
-            random_number = randint(-100, 100)
-            new_rain.rect.x = m + random_number
-            self.rains.add(new_rain)
-
     def _create_brick(self, boards):
         """创建游戏界面的木板"""
         for board in boards:
@@ -339,10 +319,23 @@ class Seva:
         self.rect_ground.midbottom = self.screen_rect.midbottom
         self.screen.blit(self.image_ground, self.rect_ground)
 
+    def _create_rain(self):
+        """判断行列有多少元素,设置间距,生产雨添加到Group组"""
+        new_rain = Rain(self)
+        self.rain_height = new_rain.rect_height
+        m = 50
+        # 产生一行的雨滴，每行的雨滴数为3到5个
+        for x in range(random.randint(3, 5)):
+            new_rain = Rain(self)
+            random_number = randint(-100, 100)
+            new_rain.rect.x = m + random_number
+            self.rains.add(new_rain)
+            m += 270
+
     def _rain_drop(self):
         # 更新雨下落的Y轴位置
+        self.rains.update()
         for read_rain in self.rains.sprites():
-            read_rain.rect.y += self.settings.rain_speed
             if read_rain.rect.y >= 150:
                 self.rains_drop = True
             else:
@@ -353,12 +346,13 @@ class Seva:
         for read_rain in self.rains.copy():
             if read_rain.rect.bottom >= self.screen_height:
                 self.rains.remove(read_rain)
-                self.polluted_up = True
+                self.polluted.polluted_up = True
 
+        # 检查是否可以产生新的雨滴
         if self.rains_drop:
             self._create_rain()
 
-    def _check_grass_gain(self,grasses):
+    def _check_grass_gain(self, grasses):
         """检测人物是否获得某个花花"""
         collisions = pygame.sprite.spritecollide(self.character, grasses, True)
         if collisions:
@@ -457,7 +451,8 @@ class Seva:
         """通过本关卡页面"""
         self.screen.fill((192, 192, 192))
         self.draw_text("CONGRATULATION!", 72, self.settings.bg_color, self.WIDTH / 2, self.HEIGHT / 4)
-        self.draw_text("Press a number key to check report!", 48, self.settings.bg_color, self.WIDTH / 2, self.HEIGHT / 2)
+        self.draw_text("Press a number key to check report!", 48, self.settings.bg_color, self.WIDTH / 2,
+                       self.HEIGHT / 2)
         pygame.display.flip()
         self.wait_for_key()
 

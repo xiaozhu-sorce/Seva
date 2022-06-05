@@ -15,6 +15,7 @@ class Reports:
         self.text_color = (30, 30, 30)
         self.font = pygame.font.SysFont('arialunicode', 24)
 
+        # key：每个报告的url value：每个页面的title
         self.text = {}
 
         self.url = "https://www.mee.gov.cn/"
@@ -25,6 +26,7 @@ class Reports:
 
     # 爬取的是每个报告的网址 https://www.mee.gov.cn/hjzl/shj/qgdbszlzk
     def pyspider_pages(self, number):
+        """爬取每个报告的网址信息"""
         if number == 0:
             s = "hjzl/shj/qgdbszlzk/index.shtml"
         else:
@@ -37,7 +39,6 @@ class Reports:
         links = soup.select('#div > li')
         for li in links:
             link = self.url + li.a['href'][9:]
-            tt = li.a.text + " " + link
             self.text[link] = li.a.text
 
     def prep_text(self):
@@ -56,6 +57,7 @@ class Reports:
         photo.close()
 
     def pyspider_pictures(self, url_page):
+        """根据具体的页面对页面进行爬取，获得图片"""
         print(url_page)
         page_text = requests.get(url=url_page, headers=self.headers)
         response = bytes(page_text.text, page_text.encoding).decode('utf-8', 'ignore')
@@ -77,6 +79,7 @@ class Reports:
         self.save_pictures(url)
 
     def get_pictures(self, key):
+        """根据当前目录下是否有相应的图片文件存在判断是否需要进行爬取"""
         self.picture_file = '/Users/xiaozhu/PycharmProjects/Seva/report/report' + str(self.index) + '.png'
 
         if not os.path.exists(self.picture_file):
@@ -89,6 +92,7 @@ class Reports:
         self.screen.blit(self.image_bg, self.image_rect)
 
     def show_text(self, index):
+        """页面上方绘制图片和title"""
         self.index = index
 
         item = self.text.items()

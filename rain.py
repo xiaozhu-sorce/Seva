@@ -15,5 +15,12 @@ class Rain(Sprite):
         self.rect_width = self.rect.width
         self.rect_height = self.rect.height
 
+        self.speed = 1
+
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
+
+    def update(self, *args):
+        self.y += self.speed
+        self.rect.y = self.y
+        self.speed += 0.01
